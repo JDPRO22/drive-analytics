@@ -1,0 +1,74 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#171C29"/>
+      <stop offset="100%" stop-color="#0B0E14"/>
+    </linearGradient>
+    <linearGradient id="arcGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#17C3B2"/>
+      <stop offset="55%" stop-color="#F2B705"/>
+      <stop offset="100%" stop-color="#F2545B"/>
+    </linearGradient>
+    <radialGradient id="hubGrad" cx="35%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FFDD6B"/>
+      <stop offset="100%" stop-color="#F2B705"/>
+    </radialGradient>
+  </defs>
+
+  <!-- app icon background -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- dim full track of the gauge -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#242A3A" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- active gauge arc, 270 degrees, open at bottom (like the dashboard gauge) -->
+  <path d="M 128.7 383.3 A 180 180 0 1 1 383.3 383.3"
+        fill="none" stroke="url(#arcGrad)" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- speedometer tick marks -->
+  <g stroke="#4A5268" stroke-width="5" stroke-linecap="round">
+    <line x1="145.7" y1="366.3" x2="137.2" y2="374.8" />
+    <line x1="118.4" y1="329.5" x2="107.8" y2="335.2" />
+    <line x1="103.0" y1="286.4" x2="91.2" y2="288.8" />
+    <line x1="100.8" y1="240.7" x2="88.8" y2="239.5" />
+    <line x1="111.9" y1="196.3" x2="100.8" y2="191.7" />
+    <line x1="135.4" y1="157.0" x2="126.1" y2="149.4" />
+    <line x1="169.3" y1="126.3" x2="162.7" y2="116.3" />
+    <line x1="210.7" y1="106.7" x2="207.2" y2="95.2" />
+    <line x1="256.0" y1="100.0" x2="256.0" y2="88.0" />
+    <line x1="301.3" y1="106.7" x2="304.8" y2="95.2" />
+    <line x1="342.7" y1="126.3" x2="349.3" y2="116.3" />
+    <line x1="376.6" y1="157.0" x2="385.9" y2="149.4" />
+    <line x1="400.1" y1="196.3" x2="411.2" y2="191.7" />
+    <line x1="411.2" y1="240.7" x2="423.2" y2="239.5" />
+    <line x1="409.0" y1="286.4" x2="420.8" y2="288.8" />
+    <line x1="393.6" y1="329.5" x2="404.2" y2="335.2" />
+    <line x1="366.3" y1="366.3" x2="374.8" y2="374.8" />
+  </g>
+
+  <!-- motorcycle wheel rim -->
+  <circle cx="256" cy="256" r="118" fill="#0F1420" stroke="#F2B705" stroke-width="7"/>
+  <circle cx="256" cy="256" r="102" fill="none" stroke="#2A3142" stroke-width="3"/>
+
+  <!-- spokes -->
+  <g stroke="#8B93A7" stroke-width="6" stroke-linecap="round">
+    <line x1="290.0" y1="256.0" x2="374.0" y2="256.0" />
+    <line x1="280.0" y1="280.0" x2="339.4" y2="339.4" />
+    <line x1="256.0" y1="290.0" x2="256.0" y2="374.0" />
+    <line x1="232.0" y1="280.0" x2="172.6" y2="339.4" />
+    <line x1="222.0" y1="256.0" x2="138.0" y2="256.0" />
+    <line x1="232.0" y1="232.0" x2="172.6" y2="172.6" />
+    <line x1="256.0" y1="222.0" x2="256.0" y2="138.0" />
+    <line x1="280.0" y1="232.0" x2="339.4" y2="172.6" />
+  </g>
+
+  <!-- needle (speedometer pointer, reading high — the "gunning it" mark) -->
+  <g>
+    <line x1="236.1" y1="272.7" x2="341.8" y2="184.0" stroke="#F2545B" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="236.1" cy="272.7" r="8" fill="#F2545B"/>
+  </g>
+
+  <!-- hub -->
+  <circle cx="256" cy="256" r="24" fill="url(#hubGrad)"/>
+  <circle cx="256" cy="256" r="24" fill="none" stroke="#0B0E14" stroke-width="3"/>
+</svg>
