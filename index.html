@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drive Analytics</title>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ TELA DE LOGIN / CADASTRO ============ -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="brand">
+      <img src="logo.png" alt="Drive Analytics" class="brand-logo">
+      <span class="brand-name">Drive<strong>Analytics</strong></span>
+    </div>
+    <p class="auth-sub">Seus dados sincronizados na nuvem — entre para continuar.</p>
+    <form id="authForm">
+      <label>E-mail <input type="email" id="auth_email" required autocomplete="email"></label>
+      <label>Senha <input type="password" id="auth_password" required minlength="6" autocomplete="current-password"></label>
+      <div class="auth-actions">
+        <button type="submit" class="btn btn-primary" id="authSignInBtn">Entrar</button>
+        <button type="button" class="btn btn-ghost" id="authSignUpBtn">Criar conta</button>
+      </div>
+      <p class="auth-msg" id="authMsg"></p>
+    </form>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="logo.png" alt="Drive Analytics" class="brand-logo">
+      <span class="brand-name">Drive<strong>Analytics</strong></span>
+    </div>
+    <nav class="nav">
+      <button class="nav-item is-active" data-view="dashboard"><span class="ic">▣</span>Painel</button>
+      <button class="nav-item" data-view="lancamento"><span class="ic">✎</span>Lançamento</button>
+      <button class="nav-item" data-view="historico"><span class="ic">≣</span>Histórico</button>
+      <button class="nav-item" data-view="despesas"><span class="ic">$</span>Despesas</button>
+      <button class="nav-item" data-view="manutencao"><span class="ic">🔧</span>Manutenção</button>
+      <button class="nav-item" data-view="corridas"><span class="ic">📷</span>Corridas</button>
+      <button class="nav-item" data-view="comparar"><span class="ic">⇄</span>Comparar</button>
+      <button class="nav-item" data-view="padroes"><span class="ic">✦</span>Padrões</button>
+      <button class="nav-item" data-view="relatorios"><span class="ic">▤</span>Relatórios</button>
+      <button class="nav-item" data-view="config"><span class="ic">⚙</span>Configurações</button>
+    </nav>
+    <div class="sidebar-foot">
+      <button id="themeToggle" class="theme-toggle" title="Alternar tema">
+        <span id="themeIcon">☾</span> <span id="themeLabel">Modo escuro</span>
+      </button>
+      <button id="logoutBtn" class="theme-toggle" title="Sair da conta" style="margin-top:8px">
+        <span>⎋</span> Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <h1 id="viewTitle">Painel do dia</h1>
+      <div class="topbar-actions">
+        <span class="today-pill" id="todayPill"></span>
+      </div>
+    </header>
+
+    <!-- ============ DASHBOARD ============ -->
+    <section class="view is-active" id="view-dashboard">
+
+      <div class="dash-date-row">
+        <label>Ver dia: <input type="date" id="dashDatePicker"></label>
+        <span class="dash-date-hint" id="dashDateHint"></span>
+      </div>
+
+      <div class="gauge-row">
+        <div class="gauge-card">
+          <div class="gauge" id="gaugeProfitHour">
+            <div class="gauge-fill"></div>
+            <div class="gauge-center">
+              <span class="gauge-value" id="gaugeValue">R$ 0,00</span>
+              <span class="gauge-label">lucro / hora</span>
+            </div>
+          </div>
+        </div>
+        <div class="insight-panel" id="insightPanel">
+          <h3>Análise Inteligente</h3>
+          <ul id="insightList" class="insight-list">
+            <li class="insight-empty">Registre um dia de trabalho para gerar sua primeira análise.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="compare-panel" id="autoComparePanel" style="display:none">
+        <h3>Comparado com o dia anterior (<span id="autoCompareDate"></span>)</h3>
+        <div class="cmp-grid" id="autoCompareGrid"></div>
+        <p class="cmp-note" id="autoCompareNote"></p>
+      </div>
+
+      <div class="cards-grid" id="statsCards"></div>
+
+      <div class="charts-grid">
+        <div class="chart-box">
+          <h4>Receita x Lucro (últimos dias)</h4>
+          <canvas id="chartReceitaLucro"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Corridas por dia</h4>
+          <canvas id="chartCorridas"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Custos por categoria (acumulado)</h4>
+          <canvas id="chartCustos"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Lucro acumulado</h4>
+          <canvas id="chartAcumulado"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Consumo (km/l por dia)</h4>
+          <canvas id="chartConsumo"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Horas trabalhadas por dia</h4>
+          <canvas id="chartHoras"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Custos por dia</h4>
+          <canvas id="chartCustosDia"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Receita acumulada</h4>
+          <canvas id="chartReceitaAcumulada"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LANÇAMENTO ============ -->
+    <section class="view" id="view-lancamento">
+      <form id="entryForm" class="form-grid">
+        <input type="hidden" id="entryId">
+
+        <fieldset class="fset">
+          <legend>Dados gerais</legend>
+          <label>Data <input type="date" id="f_data" required></label>
+          <label>Aplicativo
+            <select id="f_app">
+              <option value="uber">Uber</option>
+              <option value="99">99</option>
+              <option value="ambos">Ambos</option>
+            </select>
+          </label>
+          <label>Moto utilizada <input type="text" id="f_moto" placeholder="Ex: Honda CG 160"></label>
+          <label class="span-2">Observações <input type="text" id="f_obs" placeholder="opcional"></label>
+        </fieldset>
+
+        <fieldset class="fset">
+          <legend>Jornada</legend>
+          <label>Início (conectado) <input type="time" id="f_inicio" required></label>
+          <label>Término (desconectado) <input type="time" id="f_fim" required></label>
+          <label>Tempo em corrida (h:mm) <input type="text" id="f_tempoCorrida" placeholder="ex: 5:44" pattern="^[0-9]{1,2}:[0-5][0-9]$" title="Formato horas:minutos, ex: 5:44"></label>
+          <label>Tempo offline / pausas (h:mm) <input type="text" id="f_tempoOffline" placeholder="ex: 1:30" pattern="^[0-9]{1,2}:[0-5][0-9]$" title="Formato horas:minutos, ex: 1:30"></label>
+          <p class="field-hint span-2">Tempo aguardando chamadas é calculado automaticamente: início/término menos corrida e offline.</p>
+        </fieldset>
+
+        <fieldset class="fset">
+          <legend>Corridas</legend>
+          <label>Nº de corridas <input type="number" id="f_corridas" min="0" value="0" required></label>
+          <label>Canceladas <input type="number" id="f_canceladas" min="0" value="0"></label>
+          <label>Faturamento Uber (R$) <input type="number" id="f_fatUber" min="0" step="0.01" value="0"></label>
+          <label>Faturamento 99 (R$) <input type="number" id="f_fat99" min="0" step="0.01" value="0"></label>
+          <label>Gorjetas (R$) <input type="number" id="f_gorjetas" min="0" step="0.01" value="0"></label>
+          <label>Promoções (R$) <input type="number" id="f_promocoes" min="0" step="0.01" value="0"></label>
+          <label>Ganhos extras (R$) <input type="number" id="f_extras" min="0" step="0.01" value="0"></label>
+        </fieldset>
+
+        <fieldset class="fset">
+          <legend>Combustível</legend>
+          <label>Valor abastecido (R$) <input type="number" id="f_valorComb" min="0" step="0.01" value="0"></label>
+          <label>Preço do litro (R$) <input type="number" id="f_precoLitro" min="0" step="0.01" value="0" required></label>
+          <label>Litros abastecidos <input type="number" id="f_litros" min="0" step="0.01" placeholder="auto se vazio"></label>
+          <label>Hodômetro inicial (km) <input type="number" id="f_hodIni" min="0" step="0.1" required></label>
+          <label>Hodômetro final (km) <input type="number" id="f_hodFim" min="0" step="0.1" required></label>
+        </fieldset>
+
+        <fieldset class="fset">
+          <legend>Custos do dia</legend>
+          <label>Taxa Uber (R$/dia) <input type="number" id="f_taxaUber" min="0" step="0.01" value="0"></label>
+          <label>Taxa 99 (R$/dia) <input type="number" id="f_taxa99" min="0" step="0.01" value="0"></label>
+          <label>Alimentação (R$) <input type="number" id="f_alimentacao" min="0" step="0.01" value="0"></label>
+          <label>Estacionamento (R$) <input type="number" id="f_estacionamento" min="0" step="0.01" value="0"></label>
+          <label>Lavagem (R$) <input type="number" id="f_lavagem" min="0" step="0.01" value="0"></label>
+          <label>Óleo (R$) <input type="number" id="f_oleoCusto" min="0" step="0.01" value="0"></label>
+          <label>Outros (R$) <input type="number" id="f_outros" min="0" step="0.01" value="0"></label>
+        </fieldset>
+
+        <fieldset class="fset">
+          <legend>Manutenção (lançada neste dia)</legend>
+          <label>Troca de óleo (R$) <input type="number" id="f_mOleo" min="0" step="0.01" value="0"></label>
+          <label>Relação (R$) <input type="number" id="f_mRelacao" min="0" step="0.01" value="0"></label>
+          <label>Pneus (R$) <input type="number" id="f_mPneus" min="0" step="0.01" value="0"></label>
+          <label>Pastilhas (R$) <input type="number" id="f_mPastilhas" min="0" step="0.01" value="0"></label>
+          <label>Revisões (R$) <input type="number" id="f_mRevisao" min="0" step="0.01" value="0"></label>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Salvar lançamento</button>
+          <button type="button" class="btn btn-ghost" id="cancelEditBtn" style="display:none">Cancelar edição</button>
+          <span class="form-msg" id="formMsg"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- ============ HISTÓRICO ============ -->
+    <section class="view" id="view-historico">
+      <div class="hist-toolbar">
+        <input type="text" id="histSearch" placeholder="Buscar por data (AAAA-MM-DD) ou app...">
+        <button class="btn btn-ghost" id="exportCsvBtn">Exportar CSV/Excel</button>
+        <button class="btn btn-ghost" id="printBtn">Imprimir / PDF</button>
+      </div>
+      <div class="table-wrap">
+        <table class="hist-table" id="histTable">
+          <thead>
+            <tr>
+              <th>Data</th><th>App</th><th>Corridas</th><th>Receita</th><th>Custos</th><th>Lucro</th><th>Lucro/h</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ DESPESAS ============ -->
+    <section class="view" id="view-despesas">
+      <form id="despesaForm" class="form-grid">
+        <input type="hidden" id="dp_id">
+        <fieldset class="fset span-2">
+          <legend>Nova despesa</legend>
+          <label>Data <input type="date" id="dp_data" required></label>
+          <label>Hora <input type="time" id="dp_hora" required></label>
+          <label>Categoria
+            <select id="dp_categoria">
+              <option value="acessorio">Acessório</option>
+              <option value="peca">Peça</option>
+              <option value="documentacao">Documentação / Seguro</option>
+              <option value="outro">Outro</option>
+            </select>
+          </label>
+          <label>Valor (R$) <input type="number" id="dp_valor" min="0" step="0.01" value="0" required></label>
+          <label class="span-2">Descrição <input type="text" id="dp_descricao" placeholder="Ex: capa de chuva, suporte de celular..." required></label>
+          <label class="span-2">Loja / Local da compra <input type="text" id="dp_loja" placeholder="Ex: Loja do João, Mercado Livre..."></label>
+          <label class="span-2">Observações <input type="text" id="dp_obs" placeholder="opcional"></label>
+        </fieldset>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="dpSubmitBtn">Salvar despesa</button>
+          <button type="button" class="btn btn-ghost" id="dpCancelBtn" style="display:none">Cancelar edição</button>
+          <span class="form-msg" id="dpMsg"></span>
+        </div>
+      </form>
+
+      <div class="entries-manage">
+        <div class="hist-toolbar">
+          <h4 class="section-subtitle">Despesas registradas</h4>
+          <span class="total-pill" id="dpTotalPill">Total: R$ 0,00</span>
+          <input type="text" id="dpSearch" placeholder="Buscar por data, categoria ou loja...">
+        </div>
+        <div class="table-wrap">
+          <table class="hist-table" id="dpTable">
+            <thead>
+              <tr><th>Data</th><th>Hora</th><th>Categoria</th><th>Descrição</th><th>Loja</th><th>Valor</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="dpBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANUTENÇÃO ============ -->
+    <section class="view" id="view-manutencao">
+      <form id="manutForm" class="form-grid">
+        <input type="hidden" id="mn_id">
+        <fieldset class="fset span-2">
+          <legend>Nova manutenção</legend>
+          <label>Data <input type="date" id="mn_data" required></label>
+          <label>Hora <input type="time" id="mn_hora" required></label>
+          <label>Tipo
+            <select id="mn_tipo">
+              <option value="oleo">Troca de óleo</option>
+              <option value="pneus">Pneus</option>
+              <option value="pastilhas">Pastilhas de freio</option>
+              <option value="relacao">Relação</option>
+              <option value="revisao">Revisão</option>
+              <option value="peca">Peça trocada</option>
+              <option value="acessorio">Acessório</option>
+              <option value="outro">Outro</option>
+            </select>
+          </label>
+          <label>Valor cobrado (R$) <input type="number" id="mn_valor" min="0" step="0.01" value="0" required></label>
+          <label class="span-2">Peça / serviço realizado <input type="text" id="mn_descricao" placeholder="Ex: troca de pastilha dianteira" required></label>
+          <label>Oficina / Loja <input type="text" id="mn_oficina" placeholder="Nome do local"></label>
+          <label>Nome do mecânico <input type="text" id="mn_mecanico" placeholder="opcional"></label>
+          <label>Hodômetro (km) <input type="number" id="mn_hodometro" min="0" step="0.1" placeholder="opcional"></label>
+          <label class="span-2">Observações <input type="text" id="mn_obs" placeholder="opcional"></label>
+        </fieldset>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="mnSubmitBtn">Salvar manutenção</button>
+          <button type="button" class="btn btn-ghost" id="mnCancelBtn" style="display:none">Cancelar edição</button>
+          <span class="form-msg" id="mnMsg"></span>
+        </div>
+      </form>
+
+      <div class="entries-manage">
+        <div class="hist-toolbar">
+          <h4 class="section-subtitle">Manutenções registradas</h4>
+          <span class="total-pill" id="mnTotalPill">Total: R$ 0,00</span>
+          <input type="text" id="mnSearch" placeholder="Buscar por data, tipo, oficina ou mecânico...">
+        </div>
+        <div class="table-wrap">
+          <table class="hist-table" id="mnTable">
+            <thead>
+              <tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Serviço</th><th>Oficina</th><th>Mecânico</th><th>Valor</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="mnBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CORRIDAS (registro individual, com leitura de foto) ============ -->
+    <section class="view" id="view-corridas">
+      <div class="fset ride-photo-box">
+        <legend style="font-family:var(--font-display);color:var(--accent);font-weight:600;margin-bottom:10px;">Ler dados de um print da corrida</legend>
+        <p style="color:var(--text-dim);font-size:.82rem;margin:0 0 12px;">
+          Envie o print da tela "Detalhes da viagem" do Uber ou 99. A leitura preenche o formulário abaixo automaticamente — confira e corrija antes de salvar, a leitura de imagem não é 100% exata.
+        </p>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <input type="file" id="rdPhotoInput" accept="image/*">
+          <button type="button" class="btn btn-ghost" id="rdOcrBtn" disabled>Ler imagem</button>
+          <span class="form-msg" id="rdOcrStatus"></span>
+        </div>
+        <img id="rdPhotoPreview" style="display:none;max-width:220px;border-radius:10px;margin-top:12px;border:1px solid var(--border);">
+      </div>
+
+      <form id="rideForm" class="form-grid">
+        <input type="hidden" id="rd_id">
+        <fieldset class="fset span-2">
+          <legend>Dados da corrida</legend>
+          <label>Data <input type="date" id="rd_data" required></label>
+          <label>Hora <input type="time" id="rd_hora" required></label>
+          <label>Aplicativo
+            <select id="rd_app">
+              <option value="uber">Uber</option>
+              <option value="99">99</option>
+            </select>
+          </label>
+          <label>Valor (R$) <input type="number" id="rd_valor" min="0" step="0.01" value="0" required></label>
+          <label>Duração (min) <input type="number" id="rd_duracao" min="0" step="0.1" value="0"></label>
+          <label>Distância (km) <input type="number" id="rd_distancia" min="0" step="0.01" value="0"></label>
+          <label class="span-2">Origem <input type="text" id="rd_origem" placeholder="Endereço ou bairro de partida"></label>
+          <label class="span-2">Destino <input type="text" id="rd_destino" placeholder="Endereço ou bairro de chegada"></label>
+          <label class="span-2">Observações <input type="text" id="rd_obs" placeholder="opcional"></label>
+        </fieldset>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="rdSubmitBtn">Salvar corrida</button>
+          <button type="button" class="btn btn-ghost" id="rdCancelBtn" style="display:none">Cancelar edição</button>
+          <span class="form-msg" id="rdMsg"></span>
+        </div>
+      </form>
+
+      <div class="entries-manage">
+        <div class="hist-toolbar">
+          <h4 class="section-subtitle">Corridas registradas</h4>
+          <input type="text" id="rdSearch" placeholder="Buscar por data, app, origem ou destino...">
+        </div>
+        <div class="table-wrap">
+          <table class="hist-table" id="rdTable">
+            <thead>
+              <tr><th>Data</th><th>Hora</th><th>App</th><th>Valor</th><th>Km</th><th>Destino</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="rdBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPARAR ============ -->
+    <section class="view" id="view-comparar">
+      <div class="compare-picker">
+        <label>Data A <input type="date" id="cmpDateA"></label>
+        <label>Data B <input type="date" id="cmpDateB"></label>
+        <button class="btn btn-primary" id="cmpBtn">Comparar</button>
+      </div>
+      <div id="cmpResult"></div>
+    </section>
+
+    <!-- ============ PADRÕES ============ -->
+    <section class="view" id="view-padroes">
+      <p style="color:var(--text-dim);font-size:.85rem;margin:0 0 18px;">
+        Estatísticas calculadas sobre os seus próprios lançamentos — quanto mais dias registrados, mais confiável fica.
+      </p>
+      <div class="cards-grid" id="patternCards"></div>
+      <div class="goal-box" id="patternText"></div>
+    </section>
+
+    <!-- ============ RELATÓRIOS ============ -->
+    <section class="view" id="view-relatorios">
+      <div class="report-tabs">
+        <button class="rtab is-active" data-range="daily">Diário</button>
+        <button class="rtab" data-range="weekly">Semanal</button>
+        <button class="rtab" data-range="monthly">Mensal</button>
+        <button class="rtab" data-range="yearly">Anual</button>
+      </div>
+      <div class="cards-grid" id="reportCards"></div>
+      <div class="goal-box" id="goalBox"></div>
+    </section>
+
+    <!-- ============ CONFIGURAÇÕES ============ -->
+    <section class="view" id="view-config">
+      <form id="configForm" class="form-grid">
+        <fieldset class="fset span-2">
+          <legend>Despesas fixas mensais</legend>
+          <label>Aluguel (R$) <input type="number" id="c_aluguel" min="0" step="0.01" value="0"></label>
+          <label>Pagamento do terreno (R$) <input type="number" id="c_terreno" min="0" step="0.01" value="0"></label>
+          <label>Alimentação (R$) <input type="number" id="c_alimentacaoFixa" min="0" step="0.01" value="0"></label>
+          <label>Energia (R$) <input type="number" id="c_energia" min="0" step="0.01" value="0"></label>
+          <label>Internet (R$) <input type="number" id="c_internet" min="0" step="0.01" value="0"></label>
+          <label>Telefone (R$) <input type="number" id="c_telefone" min="0" step="0.01" value="0"></label>
+          <label>Financiamento/Parcelas (R$) <input type="number" id="c_financiamento" min="0" step="0.01" value="0"></label>
+          <label>Outras contas (R$) <input type="number" id="c_outrasContas" min="0" step="0.01" value="0"></label>
+        </fieldset>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Salvar configurações</button>
+          <span class="form-msg" id="configMsg"></span>
+        </div>
+      </form>
+
+      <div class="entries-manage">
+        <div class="hist-toolbar">
+          <h4 class="section-subtitle">Lançamentos salvos</h4>
+          <input type="text" id="configEntriesSearch" placeholder="Buscar por data ou app...">
+        </div>
+        <div class="table-wrap">
+          <table class="hist-table" id="configEntriesTable">
+            <thead>
+              <tr><th>Data</th><th>App</th><th>Corridas</th><th>Lucro</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="configEntriesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="entries-manage" id="importLocalBox">
+        <h4 class="section-subtitle">Importar dados antigos deste navegador</h4>
+        <p style="color:var(--text-dim);font-size:.85rem;margin:6px 0 12px;">
+          Se você usou o Drive Analytics neste mesmo navegador antes da sincronização na nuvem, os dados ainda estão guardados aqui localmente. Clique abaixo para enviá-los pra sua conta.
+        </p>
+        <button class="btn btn-ghost" id="importLocalBtn">Importar dados antigos deste navegador</button>
+        <span class="form-msg" id="importMsg"></span>
+      </div>
+
+      <div class="danger-zone">
+        <h4>Zona de risco</h4>
+        <p>Seus dados agora ficam salvos na nuvem (Supabase) e sincronizam entre qualquer aparelho em que você fizer login com esta conta. O botão abaixo apaga os lançamentos permanentemente do servidor, não só deste navegador. Exporte CSV regularmente como backup extra.</p>
+        <button class="btn btn-danger" id="wipeBtn">Apagar todos os dados</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
